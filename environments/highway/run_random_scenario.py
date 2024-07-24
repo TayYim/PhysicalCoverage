@@ -22,6 +22,7 @@ sys.path.append(base_directory)
 from utils.reachset import ReachableSet
 from utils.environment_configurations import RRSConfig
 from utils.environment_configurations import HighwayKinematics
+from utils.fingerprint import compute_grid, get_planning_type, get_points
 
 from highway_config import HighwayEnvironmentConfig
 
@@ -158,6 +159,27 @@ while not done:
     print("Vector: " + str(r_vector))
     print("---------------------------------------")
 
+    # Compute our fingerprint
+
+    edge_length = 60
+    cell_size = 4
+    l = get_points(edge_length, tracked_objects, lane_positions)
+    grid = compute_grid(edge_length, cell_size, l)
+
+    # grid to binary numpy 1D array
+    grid_flatten = grid.flatten()
+
+    # grid_flatten to binary string
+    grid_str = ''.join(map(str, grid_flatten))
+    print(grid_str)
+
+    # grid_str to decimal
+    grid_decimal = int(grid_str, 2)
+    print(grid_decimal)
+
+    # > planning
+    planning = get_planning_type(car_controller)
+
     if not args.no_plot:
         plt.figure(1)
         plt.clf()
@@ -213,6 +235,9 @@ while not done:
 
     simulated_time = np.round(simulated_time_period * simulated_time_counter, 4)
 
+    text_file.write("Grid Decimal: " + str(grid_decimal) + "\n")
+    text_file.write("Planning Type: " + str(planning) + "\n")
+    text_file.write("\n")
     text_file.write("Vector: " + str(r_vector) + "\n")
     text_file.write("Ego Position: " + str(np.round(env.controlled_vehicles[0].position,4)) + "\n")
     text_file.write("Ego Velocity: " + str(np.round(env.controlled_vehicles[0].velocity, 4)) + "\n")
