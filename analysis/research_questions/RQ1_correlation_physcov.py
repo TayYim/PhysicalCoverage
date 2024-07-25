@@ -261,4 +261,7 @@ plt.legend()
 plt.title("PhysCov - RRS {}: {}".format(args.RRS, args.scenario))
 plt.xlim([-5,100])
 plt.ylim([-5,100])
-plt.show()
+# plt.show()
+
+# save the plot
+plt.savefig("RRS{}-{}.png".format(RRS_number, args.scenario))
