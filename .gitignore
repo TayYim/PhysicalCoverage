@@ -23,6 +23,7 @@ __pycache__
 
 # Outputs
 output/
+output_*/
 logs/
 *.npy
 *.pkl

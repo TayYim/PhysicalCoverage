@@ -38,7 +38,7 @@ args = parser.parse_args()
 # Get the different configurations
 HK = HighwayKinematics()
 RRS = RRSConfig(beam_count=31)
-FC = FingerprintConfig(edge_length=60, cell_size=4)
+FC = FingerprintConfig(edge_length=60, cell_size=12)
 
 # Variables - Used for timing
 total_lines     = RRS.beam_count
@@ -239,6 +239,8 @@ while not done:
 
     text_file.write("Grid Decimal: " + str(grid_decimal) + "\n")
     text_file.write("Planning Type: " + str(planning) + "\n")
+    text_file.write("Obstacle Positions: " + str([(item.position[0][1], item.position[0][0]) for item in tracked_objects]) + "\n")
+    text_file.write("Lane Positions: " + str([(tuple(item[1]), tuple(item[0])) for item in lane_positions]) + "\n")
     text_file.write("\n")
     text_file.write("Vector: " + str(r_vector) + "\n")
     text_file.write("Ego Position: " + str(np.round(env.controlled_vehicles[0].position,4)) + "\n")
