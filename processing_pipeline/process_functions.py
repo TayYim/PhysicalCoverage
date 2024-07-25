@@ -354,6 +354,55 @@ def countVectorsInFile(f):
             crash = True
     return vector_count, crash
 
+def processFingerprint(file_name, total_vectors):
+    
+    # Open the file
+    f = open(file_name, "r")  
+    
+    grid_decimals = []
+    planning_types = []
+    current_vector = 0
+    edge_length = 0
+    cell_size = 0
+
+    for line in f: 
+        # Make sure we aren't writing too many lines
+        assert(current_vector <= total_vectors)
+
+        if "Grid Decimal" in line:
+            grid_dec_str = line[line.find(": ")+2:]
+            # to decimal
+            grid_dec = int(grid_dec_str)
+            grid_decimals.append(grid_dec)
+
+
+        if "Planning Type" in line:
+            planning_type_str = line[line.find(": ")+2:]
+            # to decimal
+            planning_type = int(planning_type_str)
+            planning_types.append(planning_type)
+
+            current_vector += 1
+
+        if "Edge Length" in line:
+            edge_length = int(line[line.find(": ")+2:])
+
+        if "Cell Size" in line:
+            cell_size = int(line[line.find(": ")+2:])
+
+    # Close the file
+    f.close()
+
+    # For early files that didn't have the edge length and cell size, use defaults
+    if edge_length == 0:
+        edge_length = 60
+    if cell_size == 0:
+        cell_size = 4
+
+    fingerprints = [(x[0], x[1]) for x in zip(planning_types, grid_decimals)]
+
+    return fingerprints, edge_length, cell_size, file_name
+
 def plot_debugging_centralized(original_vectors, new_vectors, new_steering_angle):
     original_lines = []
     new_lines = []

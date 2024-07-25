@@ -16,3 +16,8 @@ class WaymoKinematics:
 class RRSConfig:
     def __init__(self, beam_count = 3):
         self.beam_count     = beam_count
+
+class FingerprintConfig:
+    def __init__(self, edge_length = 60, cell_size = 4):
+        self.edge_length     = edge_length # m
+        self.cell_size       = cell_size   # m

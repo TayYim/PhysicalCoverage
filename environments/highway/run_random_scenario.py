@@ -20,7 +20,7 @@ base_directory = str(path[:path.rfind("/environments/highway")])
 sys.path.append(base_directory)
 
 from utils.reachset import ReachableSet
-from utils.environment_configurations import RRSConfig
+from utils.environment_configurations import RRSConfig, FingerprintConfig
 from utils.environment_configurations import HighwayKinematics
 from utils.fingerprint import compute_grid, get_planning_type, get_points
 
@@ -38,18 +38,21 @@ args = parser.parse_args()
 # Get the different configurations
 HK = HighwayKinematics()
 RRS = RRSConfig(beam_count=31)
+FC = FingerprintConfig(edge_length=60, cell_size=4)
 
 # Variables - Used for timing
 total_lines     = RRS.beam_count
 steering_angle  = HK.steering_angle
 max_distance    = HK.max_velocity
+edge_length = FC.edge_length
+cell_size = FC.cell_size
 
 # Declare the obstacle size (1 - car; 0.5 - motorbike)
 obstacle_size = 1
 
 # Create the output directory if it doesn't exists
-physical_coverage_path = '../../output/random_tests/physical_coverage/raw/{}_external_vehicles'.format(args.environment_vehicles)
-code_coverage_path = '../../output/random_tests/code_coverage/raw/{}_external_vehicles'.format(args.environment_vehicles)
+physical_coverage_path = '../../output/highway/random_tests/physical_coverage/raw/{}_external_vehicles'.format(args.environment_vehicles)
+code_coverage_path = '../../output/highway/random_tests/code_coverage/raw/{}_external_vehicles'.format(args.environment_vehicles)
 if not os.path.exists(physical_coverage_path):
     os.makedirs(physical_coverage_path)
 if not os.path.exists(code_coverage_path):
@@ -77,6 +80,8 @@ text_file.write("External Vehicles: %d\n" % args.environment_vehicles)
 text_file.write("Reach set total lines: %d\n" % total_lines)
 text_file.write("Reach set steering angle: %d\n" % steering_angle)
 text_file.write("Reach set max distance: %d\n" % max_distance)
+text_file.write("Edge length: %d\n" % edge_length)
+text_file.write("Cell Size: %d\n" % cell_size)
 text_file.write("------------------------------\n")
 
 # Suppress exponential notation
@@ -160,9 +165,6 @@ while not done:
     print("---------------------------------------")
 
     # Compute our fingerprint
-
-    edge_length = 60
-    cell_size = 4
     l = get_points(edge_length, tracked_objects, lane_positions)
     grid = compute_grid(edge_length, cell_size, l)
 
