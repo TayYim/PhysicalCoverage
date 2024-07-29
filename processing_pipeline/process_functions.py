@@ -7,6 +7,7 @@ import math
 import random 
 import argparse
 import itertools
+import ast
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,6 +18,7 @@ from utils.failure_oracle import hash_stall
 
 from utils.environment_configurations import RRSConfig
 from utils.environment_configurations import HighwayKinematics
+from utils.fingerprint import compute_grid_polar, get_points_from_raw_file
 
 def vector_conversion(vector, steering_angle, max_distance, total_lines, original_total_lines, distribution):
 
@@ -402,6 +404,69 @@ def processFingerprint(file_name, total_vectors):
     fingerprints = [(x[0], x[1]) for x in zip(planning_types, grid_decimals)]
 
     return fingerprints, edge_length, cell_size, file_name
+
+def processPolarFingerprint(file_name, total_vectors, polar_config):
+    # Open the file
+    f = open(file_name, "r")  
+
+    lx = polar_config.lx
+    ly = polar_config.ly
+    n_rad = polar_config.n_rad
+    n_ring = polar_config.n_ring
+
+    obs_positions = None
+    lane_positions = None
+    
+    grid_decimals = []
+    planning_types = []
+    current_vector = 0
+
+    for line in f: 
+        # Make sure we aren't writing too many lines
+        assert(current_vector <= total_vectors)
+
+        if "Obstacle Positions" in line:
+            obs_positions_str = line[line.find(": ")+2:]
+            python_list = ast.literal_eval(obs_positions_str)
+            obs_positions = np.array(python_list)
+
+        if "Lane Positions" in line:
+            lane_positions_str = line[line.find(": ")+2:]
+            python_list = ast.literal_eval(lane_positions_str)
+            lane_positions = np.array(python_list)
+
+        if "Planning Type" in line:
+            planning_type_str = line[line.find(": ")+2:]
+            # to decimal
+            planning_type = int(planning_type_str)
+            planning_types.append(planning_type)
+
+        if obs_positions is not None and lane_positions is not None:
+            l = get_points_from_raw_file(lx, ly, obs_positions, lane_positions, reverse=True)
+            grid = compute_grid_polar(lx, ly, n_rad, n_ring, l)
+
+            # grid to binary numpy 1D array
+            grid_flatten = grid.flatten()
+
+            # grid_flatten to binary string
+            grid_str = ''.join(map(str, grid_flatten))
+
+            # grid_str to decimal
+            grid_decimal = int(grid_str, 2)
+            grid_decimals.append(grid_decimal)
+
+            obs_positions = None
+            lane_positions = None
+
+            current_vector += 1
+
+
+    # Close the file
+    f.close()
+
+    fingerprints = [(x[0], x[1]) for x in zip(planning_types, grid_decimals)]
+
+    return fingerprints, file_name
 
 def plot_debugging_centralized(original_vectors, new_vectors, new_steering_angle):
     original_lines = []

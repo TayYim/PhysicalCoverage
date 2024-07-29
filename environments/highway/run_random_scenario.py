@@ -165,7 +165,7 @@ while not done:
     print("---------------------------------------")
 
     # Compute our fingerprint
-    l = get_points(edge_length, tracked_objects, lane_positions)
+    l = get_points(edge_length, edge_length, tracked_objects, lane_positions)
     grid = compute_grid(edge_length, cell_size, l)
 
     # grid to binary numpy 1D array
@@ -239,8 +239,8 @@ while not done:
 
     text_file.write("Grid Decimal: " + str(grid_decimal) + "\n")
     text_file.write("Planning Type: " + str(planning) + "\n")
-    text_file.write("Obstacle Positions: " + str([(item.position[0][1], item.position[0][0]) for item in tracked_objects]) + "\n")
-    text_file.write("Lane Positions: " + str([(tuple(item[1]), tuple(item[0])) for item in lane_positions]) + "\n")
+    text_file.write("Obstacle Positions: " + str([(item.position[0][0], item.position[0][1]) for item in tracked_objects]) + "\n")
+    text_file.write("Lane Positions: " + str([(tuple(item[0]), tuple(item[1])) for item in lane_positions]) + "\n")
     text_file.write("\n")
     text_file.write("Vector: " + str(r_vector) + "\n")
     text_file.write("Ego Position: " + str(np.round(env.controlled_vehicles[0].position,4)) + "\n")
