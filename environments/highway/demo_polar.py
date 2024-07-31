@@ -23,6 +23,7 @@ from utils.reachset import ReachableSet
 from utils.environment_configurations import RRSConfig, PolarConfig
 from utils.environment_configurations import HighwayKinematics
 from utils.fingerprint import compute_grid_polar, get_planning_type, get_points
+from utils.commonroad_handler import CommonRoadHandler
 
 from highway_config import HighwayEnvironmentConfig
 
@@ -33,6 +34,8 @@ from controllers.car_controller import EgoController
 HK = HighwayKinematics()
 RRS = RRSConfig(beam_count=31)
 POLAR = PolarConfig(lx=12, ly=60, n_rad=4, n_ring=3)
+
+commonRoadHandler = CommonRoadHandler(scenario_path="/home/tay/Workspace/Coverage/PhysicalCoverage/environments/highway/highway.xml", debug=False)
 
 # Variables - Used for timing
 total_lines     = RRS.beam_count
@@ -86,7 +89,8 @@ while not done:
     print("|--Crash: \t\t" + str(info["crashed"]))
     print("|--Collided: \t\t" + str(info["collided"]))
     print("|--Speed: \t\t" + str(np.round(info["speed"], 4)))
-    print("|--Observation: \n" + str(obs))
+    print(repr(obs))
+    print("Ego Position: " + str(repr(np.round(env.controlled_vehicles[0].position,4))) + "\n")
     print("")
 
     # Get the next action based on the current observation
@@ -116,6 +120,13 @@ while not done:
 
     # =================================================================================================
     # Go our method here
+
+    print("Lane Positions: " + str([(tuple(item[0]), tuple(item[1])) for item in lane_positions]) + "\n")
+
+    ego_position = np.round(env.controlled_vehicles[0].position,4)
+    ttr = commonRoadHandler.get_min_ttr(obs, ego_position)
+    commonRoadHandler.reset()
+    print("|--TTR: " + str(ttr))
 
     lx = POLAR.lx
     ly = POLAR.ly

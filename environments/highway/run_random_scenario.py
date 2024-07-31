@@ -23,6 +23,7 @@ from utils.reachset import ReachableSet
 from utils.environment_configurations import RRSConfig, FingerprintConfig
 from utils.environment_configurations import HighwayKinematics
 from utils.fingerprint import compute_grid, get_planning_type, get_points
+from utils.commonroad_handler import CommonRoadHandler
 
 from highway_config import HighwayEnvironmentConfig
 
@@ -39,6 +40,8 @@ args = parser.parse_args()
 HK = HighwayKinematics()
 RRS = RRSConfig(beam_count=31)
 FC = FingerprintConfig(edge_length=60, cell_size=12)
+
+commonRoadHandler = CommonRoadHandler(scenario_path="/home/tay/Workspace/Coverage/PhysicalCoverage/environments/highway/highway.xml", debug=False)
 
 # Variables - Used for timing
 total_lines     = RRS.beam_count
@@ -129,6 +132,7 @@ while not done:
     print("|--Collided: \t\t" + str(info["collided"]))
     print("|--Speed: \t\t" + str(np.round(info["speed"], 4)))
     print("|--Observation: \n" + str(obs))
+    print("Ego Position: " + str(repr(np.round(env.controlled_vehicles[0].position,4))) + "\n")
     print("")
 
     # Get the next action based on the current observation
@@ -165,6 +169,11 @@ while not done:
     print("---------------------------------------")
 
     # Compute our fingerprint
+
+    ego_position = np.round(env.controlled_vehicles[0].position,4)
+    ttr = commonRoadHandler.get_min_ttr(obs, ego_position)
+    commonRoadHandler.reset()
+
     l = get_points(edge_length, edge_length, tracked_objects, lane_positions)
     grid = compute_grid(edge_length, cell_size, l)
 
@@ -238,6 +247,7 @@ while not done:
     simulated_time = np.round(simulated_time_period * simulated_time_counter, 4)
 
     text_file.write("Grid Decimal: " + str(grid_decimal) + "\n")
+    text_file.write("Min TTR: " + str(ttr) + "\n")
     text_file.write("Planning Type: " + str(planning) + "\n")
     text_file.write("Obstacle Positions: " + str([(item.position[0][0], item.position[0][1]) for item in tracked_objects]) + "\n")
     text_file.write("Lane Positions: " + str([(tuple(item[0]), tuple(item[1])) for item in lane_positions]) + "\n")
