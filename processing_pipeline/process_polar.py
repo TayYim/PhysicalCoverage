@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 
-from utils.environment_configurations import RRSConfig, PolarConfig
+from utils.environment_configurations import PolarConfig
 from utils.environment_configurations import WaymoKinematics
 from utils.environment_configurations import BeamNGKinematics
 from utils.environment_configurations import HighwayKinematics
@@ -47,7 +47,7 @@ BK = BeamNGKinematics()
 WK = WaymoKinematics()
 FO = FailureOracle(scenario=args.scenario)
 
-POLAR = PolarConfig(lx=12, ly=30, n_rad=4, n_ring=3)
+POLAR = PolarConfig(lx=12, ly=60, n_rad=4, n_ring=3)
 
 lx = POLAR.lx
 ly = POLAR.ly
@@ -186,10 +186,7 @@ print("---------Processing files---------")
 print("----------------------------------")
 
 # Create the numpy array 
-# TODO: Change this to 3, adding TTR
-# dt = np.dtype([('integer', np.int8), ('integer', np.int64)])
-# polar_fingerprints       = np.empty((total_files, vec_per_file), dtype=dt) 
-polar_fingerprints = np.zeros((total_files, vec_per_file, 2), dtype=int)
+polar_fingerprints = np.zeros((total_files, vec_per_file, 3), dtype=int)
 
 total_processors = int(args.cores)
 pool =  multiprocessing.Pool(processes=total_processors)

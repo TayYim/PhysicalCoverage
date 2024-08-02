@@ -203,14 +203,14 @@ for stall in stalls:
             unique_failure_set.add(s)
 
 # Compute the denominator for the coverage
-# TODO: add ttr
+# TODO: magic numbers
 global denominator
-denominator = int(3 * 2**(POLAR.n_ring*POLAR.n_rad))
+denominator = int(5 * 3 * 2**(POLAR.n_ring*POLAR.n_rad))
 
 total_tests = len(traces)
 
-# test_suit_sizes = [5, 10, 20, 50, 70, 100, 200, 500]
-test_suit_sizes = [10, 50, 100, 500, 1000, 5000, 10000]
+test_suit_sizes = [5, 10, 20, 50, 70, 100, 200, 500]
+# test_suit_sizes = [10, 50, 100, 500, 1000, 5000]
 
 f = open("Polar wirh RSS{}-{}.txt".format(RRS_number, args.scenario), "w")
 

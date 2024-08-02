@@ -419,7 +419,10 @@ def processPolarFingerprint(file_name, total_vectors, polar_config):
     
     grid_decimals = []
     planning_types = []
+    ttrs = []
     current_vector = 0
+
+    ttr_segments = [0, 0.5, 1.0, 1.5, 2.0]
 
     for line in f: 
         # Make sure we aren't writing too many lines
@@ -440,6 +443,18 @@ def processPolarFingerprint(file_name, total_vectors, polar_config):
             # to decimal
             planning_type = int(planning_type_str)
             planning_types.append(planning_type)
+
+        if "Min TTR" in line:
+            ttr_str = line[line.find(": ")+2:]
+            # to decimal
+            ttr = float(ttr_str)
+            for i in range(len(ttr_segments)-1):
+                if ttr < ttr_segments[i+1]:
+                    ttr = ttr_segments[i]
+                break
+            if ttr >= ttr_segments[-1]:
+                ttr = ttr_segments[-1]
+            ttrs.append(ttr)
 
         if obs_positions is not None and lane_positions is not None:
             l = get_points_from_raw_file(lx, ly, obs_positions, lane_positions, reverse=True)
@@ -464,7 +479,7 @@ def processPolarFingerprint(file_name, total_vectors, polar_config):
     # Close the file
     f.close()
 
-    fingerprints = [(x[0], x[1]) for x in zip(planning_types, grid_decimals)]
+    fingerprints = [(x[0], x[1], x[2]) for x in zip(ttrs, planning_types, grid_decimals)]
 
     return fingerprints, file_name
 
