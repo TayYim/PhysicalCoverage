@@ -170,9 +170,9 @@ while not done:
 
     # Compute our fingerprint
 
-    ego_position = np.round(env.controlled_vehicles[0].position,4)
-    ttr = commonRoadHandler.get_min_ttr(obs, ego_position)
-    commonRoadHandler.reset()
+    # ego_position = np.round(env.controlled_vehicles[0].position,4)
+    # ttr = commonRoadHandler.get_min_ttr(obs, ego_position)
+    # commonRoadHandler.reset()
 
     l = get_points(edge_length, edge_length, tracked_objects, lane_positions)
     grid = compute_grid(edge_length, cell_size, l)
@@ -246,10 +246,8 @@ while not done:
 
     simulated_time = np.round(simulated_time_period * simulated_time_counter, 4)
 
-    text_file.write("Grid Decimal: " + str(grid_decimal) + "\n")
-    text_file.write("Min TTR: " + str(ttr) + "\n")
+    text_file.write("OBS: " + "[" + str(', '.join(str(list(row)) for row in obs)) + "]" + "\n")
     text_file.write("Planning Type: " + str(planning) + "\n")
-    text_file.write("Obstacle Positions: " + str([(item.position[0][0], item.position[0][1]) for item in tracked_objects]) + "\n")
     text_file.write("Lane Positions: " + str([(tuple(item[0]), tuple(item[1])) for item in lane_positions]) + "\n")
     text_file.write("\n")
     text_file.write("Vector: " + str(r_vector) + "\n")
